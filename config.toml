@@ -1,3 +1,13 @@
+# separate truncate lengths for console and file output
+# it's easier to read in the console if its shorter, however
+# storing the entire line in the output can balloon if we log
+# base64 representations of files.
+truncateLineLengthConsole = 128
+truncateLineLengthFile = 1024
+
+# set this to a filename to append logs to that file
+writeToFile = false
+
 [[processes]]
 name = "browser"
 exec = "./3suite-browser.app/Contents/MacOS/3suite-browser"
