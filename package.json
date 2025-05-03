@@ -4,6 +4,8 @@
   "main": "main.js",
   "type": "module",
   "dependencies": {
-    "3lib-config": "github:3sig/3lib-config"
+    "3lib-config": "github:3sig/3lib-config",
+    "execa": "^9.5.2",
+    "smol-toml": "^1.3.4"
   }
 }

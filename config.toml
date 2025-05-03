@@ -1,1 +1,18 @@
-test = "Hello World!"
+[[processes]]
+name = "browser"
+exec = "./3suite-browser.app/Contents/MacOS/3suite-browser"
+loadConfig = "browser"
+
+[[processes]]
+name = "httpServer"
+exec = "./3suite-http-server"
+tomlConfig = {port = 4004, directory = "node_modules"}
+
+
+[configs.browser]
+url = "http://localhost:4004/3lib-config/main.js"
+fullscreen = false
+disableCursor = false
+
+windowWidth = 800
+windowHeight = 600
