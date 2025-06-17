@@ -18,6 +18,7 @@ if (config.get("writeToFile", false)) {
 
 for (let process of config.get("processes")) {
   let processConfig, processConfigEncoded;
+  let cwd = "";
   if (process.loadConfig) {
     processConfig = config.get("configs/" + process.loadConfig, null);
     if (processConfig == null)
@@ -28,9 +29,20 @@ for (let process of config.get("processes")) {
     processConfig = process.tomlConfig;
     processConfigEncoded = encodeURI(toml.stringify(processConfig));
   }
+  if (process.cwd) {
+    cwd = process.cwd;
+  }
   (async () => {
     console.log("executing", process.exec, processConfig);
-    for await (const result of execa(process.exec, [processConfigEncoded])) {
+    let execaResult;
+    if (processConfigEncoded) {
+      execaResult = execa(process.exec, [processConfigEncoded], { cwd });
+    }
+    else {
+      console.log("running without processConfig")
+      execaResult = execa(process.exec, [], { cwd });
+    }
+    for await (const result of execaResult) {
 
       let msg = `${moment().format("YYYY-MM-DD_HH:mm:ss.SS")} | ${process.name}: ${result}`;
       let msgConsole = msg;
