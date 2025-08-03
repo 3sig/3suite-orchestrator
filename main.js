@@ -1,14 +1,14 @@
 import config from "3lib-config";
 import { execa } from "execa";
 import moment from "moment/moment";
-import * as toml from "smol-toml";
 import fs from "fs";
 
 config.init();
+console.log(config.get())
 let processes = config.get("processes", []);
 
 if (processes.length == 0)
-  console.error("no processes defined. check or create config.toml file.");
+  console.error("no processes defined. check or create config.json5 file.");
 
 let logStream;
 
@@ -23,11 +23,11 @@ for (let process of config.get("processes")) {
     processConfig = config.get("configs/" + process.loadConfig, null);
     if (processConfig == null)
       console.error("config", process.loadConfig, "is not defined");
-    processConfigEncoded = encodeURI(toml.stringify(processConfig));
+    processConfigEncoded = encodeURI(JSON.stringify(processConfig));
   }
-  if (process.tomlConfig) {
-    processConfig = process.tomlConfig;
-    processConfigEncoded = encodeURI(toml.stringify(processConfig));
+  if (process.config) {
+    processConfig = process.config;
+    processConfigEncoded = encodeURI(JSON.stringify(processConfig));
   }
   if (process.cwd) {
     cwd = process.cwd;

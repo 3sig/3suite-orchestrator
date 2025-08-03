@@ -11,14 +11,14 @@
 
   processes: [
     {
+      name: "httpServer",
+      exec: "./3suite-http-server",
+      config: {port: 4004, directory: "node_modules"},
+    },
+    {
       name: "browser",
       exec: "./3suite-browser.app/Contents/MacOS/3suite-browser",
       loadConfig: "browser",
-    },
-    {
-      name: "httpServer",
-      exec: "./3suite-http-server",
-      tomlConfig: {port: 4004, directory: "node_modules"},
     },
   ],
 
