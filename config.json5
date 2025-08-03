@@ -20,7 +20,7 @@
       exec: "./3suite-http-server",
       tomlConfig: {port: 4004, directory: "node_modules"},
     },
-  ]
+  ],
 
   configs: {
     browser: {
