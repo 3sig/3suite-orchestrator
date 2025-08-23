@@ -100,36 +100,23 @@ for (let process of processes) {
         const timestamp = moment().format("YYYY-MM-DD_HH:mm:ss.SS");
         const msg = `${timestamp} | ${process.name}: ${result}`;
 
-        if (verbose) {
-          console.log(`Process '${process.name}' output (${result.length} chars):`, msg);
-        }
-
         let msgConsole = msg;
         let msgFile = msg;
 
         const maxLineLengthConsole = config.get("truncateLineLengthConsole", 0);
         if (maxLineLengthConsole > 0 && msg.length > maxLineLengthConsole) {
           msgConsole = msg.substring(0, maxLineLengthConsole - 3) + "...";
-          if (verbose) {
-            console.log(`Console output truncated from ${msg.length} to ${maxLineLengthConsole} chars for '${process.name}'`);
-          }
         }
 
         const maxLineLengthFile = config.get("truncateLineLengthFile", 0);
         if (maxLineLengthFile > 0 && msg.length > maxLineLengthFile) {
           msgFile = msg.substring(0, maxLineLengthFile - 3) + "...";
-          if (verbose) {
-            console.log(`File output truncated from ${msg.length} to ${maxLineLengthFile} chars for '${process.name}'`);
-          }
         }
 
         console.log(msgConsole);
 
         if (logStream) {
           logStream.write(msgFile + "\n");
-          if (verbose) {
-            console.log(`Written to log file: ${msgFile.length} chars for '${process.name}'`);
-          }
         }
       }
     } catch (error) {
