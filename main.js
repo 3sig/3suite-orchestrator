@@ -29,6 +29,32 @@ if (writeToFile) {
   }
 }
 
+function createCustomLogger(processName) {
+  return function(verboseLine, verboseObject) {
+    const timestamp = moment().format("YYYY-MM-DD_HH:mm:ss.SS");
+    const msg = `${timestamp} | ${processName}: ${verboseObject.message}`;
+
+    let msgConsole = msg;
+    let msgFile = msg;
+
+    const maxLineLengthConsole = config.get("truncateLineLengthConsole", 0);
+    if (maxLineLengthConsole > 0 && msg.length > maxLineLengthConsole) {
+      msgConsole = msg.substring(0, maxLineLengthConsole - 3) + "...";
+    }
+
+    const maxLineLengthFile = config.get("truncateLineLengthFile", 0);
+    if (maxLineLengthFile > 0 && msg.length > maxLineLengthFile) {
+      msgFile = msg.substring(0, maxLineLengthFile - 3) + "...";
+    }
+
+    console.log(msgConsole);
+
+    if (logStream) {
+      logStream.write(msgFile + "\n");
+    }
+  };
+}
+
 for (let process of processes) {
   let processConfig, processConfigEncoded;
   let cwd = "";
@@ -75,13 +101,18 @@ for (let process of processes) {
     let execaResult;
 
     try {
+      const execaOptions = {
+        cwd,
+        verbose: createCustomLogger(process.name)
+      };
+
       if (processConfigEncoded) {
-        execaResult = execa(process.exec, [processConfigEncoded], { cwd });
+        execaResult = execa(process.exec, [processConfigEncoded], execaOptions);
       } else {
         if (verbose) {
           console.log(`Process '${process.name}' running without config`);
         }
-        execaResult = execa(process.exec, [], { cwd });
+        execaResult = execa(process.exec, [], execaOptions);
       }
     } catch (error) {
       console.error(`Failed to start process '${process.name}':`, error.message);
@@ -96,29 +127,7 @@ for (let process of processes) {
     }
 
     try {
-      for await (const result of execaResult) {
-        const timestamp = moment().format("YYYY-MM-DD_HH:mm:ss.SS");
-        const msg = `${timestamp} | ${process.name}: ${result}`;
-
-        let msgConsole = msg;
-        let msgFile = msg;
-
-        const maxLineLengthConsole = config.get("truncateLineLengthConsole", 0);
-        if (maxLineLengthConsole > 0 && msg.length > maxLineLengthConsole) {
-          msgConsole = msg.substring(0, maxLineLengthConsole - 3) + "...";
-        }
-
-        const maxLineLengthFile = config.get("truncateLineLengthFile", 0);
-        if (maxLineLengthFile > 0 && msg.length > maxLineLengthFile) {
-          msgFile = msg.substring(0, maxLineLengthFile - 3) + "...";
-        }
-
-        console.log(msgConsole);
-
-        if (logStream) {
-          logStream.write(msgFile + "\n");
-        }
-      }
+      await execaResult;
     } catch (error) {
       console.error(`Process '${process.name}' encountered error:`, error.message);
       if (verbose) {
