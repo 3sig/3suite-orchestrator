@@ -73,6 +73,7 @@ for (let process of processes) {
 
   if (process.config) {
     processConfig = process.config;
+    if (verbose) processConfig.verbose = true;
     processConfigEncoded = encodeURI(JSON.stringify(processConfig));
     if (verbose) {
       console.log(`Using inline config for '${process.name}':`, processConfig);
