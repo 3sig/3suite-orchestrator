@@ -104,7 +104,7 @@ for (let process of processes) {
     try {
       const execaOptions = {
         cwd,
-        windowsHide: true,
+        windowsHide: false,
         verbose: createCustomLogger(process.name)
       };
 
